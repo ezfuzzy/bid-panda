@@ -18,6 +18,6 @@ public class RestTemplateConfig {
         // 읽기 타임아웃 설정 (10초)
         factory.setReadTimeout(10000);
 
-        return new RestTemplate();
+        return new RestTemplate(factory);
     }
 }

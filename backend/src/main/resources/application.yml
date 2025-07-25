@@ -8,7 +8,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/work_hive
+    url: jdbc:postgresql://localhost:5432/bid_panda
     username: postgres
     password: 2222
   jpa:

@@ -31,6 +31,8 @@ public class G2BApiServiceImpl implements G2BApiService{
     public String fetchBiddingNotices() {
         // 1. basic
         basicApiCall();
+        basicApiCall2();
+
         return "str";
     }
 
@@ -43,7 +45,33 @@ public class G2BApiServiceImpl implements G2BApiService{
             String url = "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch" +
                     "?inqryDiv=2" +
                     "&pageNo=1" +
-                    "&numOfRows=10" +
+                    "&numOfRows=5" +
+                    "&inqryBgnDt=202507250000" +
+                    "&inqryEndDt=202508242359" +
+                    "&ServiceKey=" + serviceKey+
+                    "&type=json";
+
+            log.info("요청 URL: {}", url);
+
+            // RestTemplate으로 호출
+            String response = restTemplate.getForObject(url, String.class);
+
+            log.info("\n기본 호출 응답: {}", response);
+            processBiddingNoticeData(response);
+        } catch (Exception e) {
+            log.error("기본 API 호출 오류: {}", e.getMessage(), e);
+        }
+    }
+
+    private void basicApiCall2() {
+        try {
+            log.info("=== 2. 기본 API 호출 ===");
+
+            // URL 직접 구성
+            String url = "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch" +
+                    "?inqryDiv=2" +
+                    "&pageNo=1" +
+                    "&numOfRows=5" +
                     "&inqryBgnDt=202507250000" +
                     "&inqryEndDt=202508242359" +
                     "&ServiceKey=" + serviceKey_en+
@@ -54,7 +82,7 @@ public class G2BApiServiceImpl implements G2BApiService{
             // RestTemplate으로 호출
             String response = restTemplate.getForObject(url, String.class);
 
-            log.info("기본 호출 응답: {}", response);
+            log.info("\n기본 호출 응답: {}", response);
             processBiddingNoticeData(response);
         } catch (Exception e) {
             log.error("기본 API 호출 오류: {}", e.getMessage(), e);
