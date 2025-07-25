@@ -1,0 +1,32 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /
+    session:
+      tracking-modes: cookie
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/work_hive
+    username: postgres
+    password: 2222
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    user:
+      name: admin
+      password: admin
+logging:
+  level:
+    com.wasrem_WorkHive.wasrem: DEBUG
+    "[org.hibernate.SQL]": OFF
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
