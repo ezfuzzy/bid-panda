@@ -1,4 +1,6 @@
-# 🐼 bid-panda
+<img width="960" height="260" alt="Image" src="https://github.com/user-attachments/assets/78c4a65e-4891-465f-be9b-a5cffa1c412d" />
+
+# bid-panda
 
 > From API to AI — a full pipeline for publishing and analyzing job & bidding data.
 
