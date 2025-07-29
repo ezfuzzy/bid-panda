@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { BidApiService } from "../bidApiService"
 
-const ApiTestSection = ({ fetchDataFromDB, showToast }) => {
+const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData }) => {
   const [inputId, setInputId] = useState("")
   const [loading, setLoading] = useState({
     fetch: false,
@@ -48,7 +48,6 @@ const ApiTestSection = ({ fetchDataFromDB, showToast }) => {
       return
     }
 
-    // 삭제 확인
     const confirmDelete = window.confirm(`정말로 ID ${inputId}번 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)
 
     if (!confirmDelete) {
@@ -60,6 +59,14 @@ const ApiTestSection = ({ fetchDataFromDB, showToast }) => {
       const res = await BidApiService.deleteById(inputId)
       console.log(`ID ${inputId} 삭제 결과:`, res)
       showToast(`ID ${inputId} 데이터가 성공적으로 삭제되었습니다`, "success")
+
+      // setData((prev) => {
+      //   prev.filter((item) => item.id !== inputId)
+      // })
+      setCurrentData((prev) => {
+        prev.filter((item) => item.id !== inputId)
+      })
+
       setInputId("") // 삭제 성공 시 입력 필드 초기화
     } catch (err) {
       console.error(`ID ${inputId} 삭제 실패:`, err)
@@ -96,7 +103,7 @@ const ApiTestSection = ({ fetchDataFromDB, showToast }) => {
     try {
       const res = await BidApiService.deleteAll()
       console.log(` 삭제 결과:`, res)
-      showToast(`모든든 데이터가 성공적으로 삭제되었습니다`, "success")
+      showToast(`모든 데이터가 성공적으로 삭제되었습니다`, "success")
       setInputId("") // 삭제 성공 시 입력 필드 초기화
     } catch (err) {
       console.error(`삭제 실패:`, err)

@@ -456,7 +456,7 @@ const G2bBidSearch = () => {
             </div>
 
             {/* API 테스트 섹션 */}
-            <ApiTestSection fetchDataFromDB={fetchDataFromDB} showToast={showToast} />
+            <ApiTestSection fetchDataFromDB={fetchDataFromDB} showToast={showToast} setData={setData} setCurrentData={setCurrentData} />
           </div>
         </div>
 
