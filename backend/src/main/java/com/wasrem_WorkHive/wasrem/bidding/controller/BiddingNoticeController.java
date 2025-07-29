@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,6 +90,20 @@ public class BiddingNoticeController {
     }
 
     /**
+     * 여러 개의 입찰 공고를 한 번에 생성합니다.
+     *
+     * @param biddingNoticeDtos 생성할 입찰 공고들의 데이터 전송 객체 (DTO) 리스트
+     * @return 생성된 입찰 공고들의 정보와 HTTP 상태 코드 201 (Created)
+     */
+    @PostMapping("/batch")
+    public ResponseEntity<List<BiddingNoticeDto>> createBiddingNotices(@RequestBody List<BiddingNoticeDto> biddingNoticeDtos) {
+        // 서비스 레이어에 입찰 공고 배치를 위임
+        List<BiddingNoticeDto> createdBiddingNotices = biddingNoticeService.createBiddingNotices(biddingNoticeDtos);
+        // 생성된 리소스와 함께 201 Created 상태 반환
+        return new ResponseEntity<>(createdBiddingNotices, HttpStatus.CREATED);
+    }
+
+    /**
      * ID를 사용하여 특정 입찰 공고를 조회합니다.
      *
      * @param id 조회할 입찰 공고의 ID
@@ -156,5 +171,19 @@ public class BiddingNoticeController {
     public ResponseEntity<BiddingNoticeDto> addBiddingResult(@PathVariable Long id, @RequestBody BiddingResultDto resultDto) {
         BiddingNoticeDto updatedBiddingNotice = biddingNoticeService.addBiddingResult(id, resultDto);
         return ResponseEntity.ok(updatedBiddingNotice);
+    }
+
+    /**
+     *  admin
+     */
+    @DeleteMapping("/admin/delete-all")
+    public ResponseEntity<String> deleteAllBiddingNotices() {
+        try {
+            biddingNoticeService.deleteAllBiddingNotices();
+            return ResponseEntity.ok("All bidding notices have been deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while deleting the data.");
+        }
     }
 }

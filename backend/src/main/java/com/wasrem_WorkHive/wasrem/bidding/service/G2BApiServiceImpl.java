@@ -1,16 +1,21 @@
 package com.wasrem_WorkHive.wasrem.bidding.service;
 
 import com.wasrem_WorkHive.wasrem.common.util.BiddingNoticeParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
+@Transactional
 public class G2BApiServiceImpl implements G2BApiService{
 
     @Value("${g2b.api.service-key}")
@@ -31,16 +36,12 @@ public class G2BApiServiceImpl implements G2BApiService{
     public String fetchBiddingNotices() {
         // 1. basic
         basicApiCall();
-        basicApiCall2();
 
         return "str";
     }
 
-
     private void basicApiCall() {
         try {
-            log.info("=== 1. 기본 API 호출 ===");
-
             // URL 직접 구성
             String url = "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch" +
                     "?inqryDiv=2" +
@@ -48,39 +49,14 @@ public class G2BApiServiceImpl implements G2BApiService{
                     "&numOfRows=5" +
                     "&inqryBgnDt=202507250000" +
                     "&inqryEndDt=202508242359" +
-                    "&ServiceKey=" + serviceKey+
+                    "&ServiceKey=" + serviceKey_en +
                     "&type=json";
 
             log.info("요청 URL: {}", url);
 
             // RestTemplate으로 호출
-            String response = restTemplate.getForObject(url, String.class);
-
-            log.info("\n기본 호출 응답: {}", response);
-            processBiddingNoticeData(response);
-        } catch (Exception e) {
-            log.error("기본 API 호출 오류: {}", e.getMessage(), e);
-        }
-    }
-
-    private void basicApiCall2() {
-        try {
-            log.info("=== 2. 기본 API 호출 ===");
-
-            // URL 직접 구성
-            String url = "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch" +
-                    "?inqryDiv=2" +
-                    "&pageNo=1" +
-                    "&numOfRows=5" +
-                    "&inqryBgnDt=202507250000" +
-                    "&inqryEndDt=202508242359" +
-                    "&ServiceKey=" + serviceKey_en+
-                    "&type=json";
-
-            log.info("요청 URL: {}", url);
-
-            // RestTemplate으로 호출
-            String response = restTemplate.getForObject(url, String.class);
+            URI uri = new URI(url);
+            String response = restTemplate.getForObject(uri, String.class);
 
             log.info("\n기본 호출 응답: {}", response);
             processBiddingNoticeData(response);

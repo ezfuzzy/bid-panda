@@ -15,6 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * BiddingNoticeService 인터페이스의 구현체입니다.
  * 입찰 공고에 대한 핵심 비즈니스 로직을 담당합니다.
@@ -58,6 +62,47 @@ public class BiddingNoticeServiceImpl implements BiddingNoticeService {
         // 저장된 Entity를 DTO로 변환하여 반환
         return biddingNoticeMapper.toDto(savedBiddingNotice);
     }
+
+    /**
+     * 여러 개의 입찰 공고를 한 번에 생성합니다.
+     *
+     * @param biddingNoticeDtos 생성할 입찰 공고들의 데이터 전송 객체 (DTO) 리스트
+     * @return 생성된 입찰 공고들의 DTO 리스트
+     * @throws IllegalStateException 중복된 입찰 공고 번호와 차수가 존재하는 경우
+     */
+    @Override
+    public List<BiddingNoticeDto> createBiddingNotices(List<BiddingNoticeDto> biddingNoticeDtos) {
+        List<BiddingNoticeDto> validBiddingNoticeDtos = new ArrayList<>();
+
+        for (BiddingNoticeDto biddingNoticeDto : biddingNoticeDtos) {
+            // 중복 체크: 이미 존재하는 입찰 공고는 건너뛰기
+            if (biddingNoticeRepository.existsByBidNtceNoAndBidNtceOrd(biddingNoticeDto.getBidNtceNo(), biddingNoticeDto.getBidNtceOrd())) {
+                log.error("Bidding notice with same number and order already exists. {}", biddingNoticeDto.getBidNtceNm());
+                continue; // 중복 공고는 건너뛰기
+            }
+
+            // 유효한 공고에 대해서만 처리
+            biddingNoticeDto.setBiddingResult(null);  // 입찰 결과는 포함되지 않음
+            validBiddingNoticeDtos.add(biddingNoticeDto);
+        }
+
+        // 유효한 입찰 공고만 Entity로 변환 후 저장
+        List<BiddingNotice> biddingNotices = validBiddingNoticeDtos.stream()
+                .map(biddingNoticeMapper::toEntity)
+                .collect(Collectors.toList());
+
+        // 연관 관계 설정
+        biddingNotices.forEach(this::setupRelationships);
+
+        // 데이터베이스에 일괄 저장
+        List<BiddingNotice> savedBiddingNotices = biddingNoticeRepository.saveAll(biddingNotices);
+
+        // 저장된 Entity들을 DTO로 변환하여 반환
+        return savedBiddingNotices.stream()
+                .map(biddingNoticeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * ID로 특정 입찰 공고를 조회합니다.
@@ -210,4 +255,11 @@ public class BiddingNoticeServiceImpl implements BiddingNoticeService {
             biddingNotice.getSchedule().setBiddingNotice(biddingNotice);
         }
     }
+
+    // 모든 데이터를 삭제하는 메서드
+    @Override
+    public void deleteAllBiddingNotices() {
+        biddingNoticeRepository.deleteAll();
+    }
+
 }

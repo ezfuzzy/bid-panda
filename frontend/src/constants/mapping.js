@@ -103,3 +103,84 @@ export const regionOptions = [
 ]
 
 export const PRESET_CODES = ["1162", "1164", "1172", "1173", "1192", "1260"]
+
+export const BID_SEARCH_CONSTANTS = {
+  // API 관련 상수
+  API: {
+    BASE_URL_BID_LIST: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch",
+    BASE_URL_REGION: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoPrtcptPsblRgn",
+    API_KEY: process.env.REACT_APP_BidPublicInfoService_API_KEY_DEC,
+  },
+
+  // 업종코드 프리셋
+  PRESET_CODES: ["1162", "1164", "1172", "1173", "1192", "1260"],
+
+  // 페이징 관련
+  PAGINATION: {
+    ROWS_PER_PAGE: 20,
+    MAX_SEARCH_RESULTS: 999,
+    MAX_RESULTS_THRESHOLD: 1000,
+  },
+
+  // 날짜 관련
+  DATE: {
+    DEFAULT_PERIOD_DAYS: 30,
+    PREVIOUS_PERIOD_DAYS: 31,
+    URGENT_DEADLINE_DAYS: 3,
+  },
+
+  // 메시지
+  MESSAGES: {
+    SEARCH_LOADING: "🔄 검색중...",
+    SEARCH_BUTTON: "🔍 검색하기",
+    FILTERING: "맞춤 정보 필터링 중...",
+    MAX_RESULTS_WARNING: "999개까지 검색합니다.(검색결과의 수가 1000개 이상입니다. 검색 조건을 조정해주세요)",
+    COPY_SUCCESS: "텍스트가 클립보드에 복사되었습니다. Crtl + V 로 붙여넣으세요.",
+    COPY_FAILED: "클립보드에 복사 실패: ",
+    SAVE_ERROR: "저장 중 오류가 발생했습니다.",
+    DATE_SELECTION_ERROR: "조회 시작일과 종료일을 선택해주세요.",
+  },
+
+  // API 응답 관련
+  API_RESPONSE: {
+    SUCCESS_CODE: "00",
+    INQUIRY_DIVISION: "2",
+    PAGE_NUMBER: "1",
+    RESPONSE_TYPE: "json",
+    REGION_ALL_CODE: "00",
+  },
+
+  // 필터링 제외 항목
+  EXCLUDE_NOTICE_TYPES: ["취소공고", "연기공고"],
+
+  // 지역 관련
+  REGION: {
+    DEFAULT_NAME: "전국(공고서참조)",
+    API_ERROR_NAME: "API 요청 실패",
+    NO_INFO_NAME: "지역정보없음",
+  },
+
+  // Toast 자동 닫기 시간 (밀리초)
+  TOAST_AUTO_CLOSE_TIME: 4000,
+}
+
+// 날짜 포맷팅 유틸리티
+export const formatDate = (date, end = false) => {
+  if (!date) return ""
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, "0")
+  const d = String(date.getDate()).padStart(2, "0")
+  return `${y}${m}${d}${end ? "2359" : "0000"}`
+}
+
+// 기본 날짜 생성 유틸리티
+export const createDefaultDates = () => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const defaultEndDate = new Date()
+  defaultEndDate.setHours(23, 59, 0, 0)
+  defaultEndDate.setDate(defaultEndDate.getDate() + BID_SEARCH_CONSTANTS.DATE.DEFAULT_PERIOD_DAYS)
+
+  return { today, defaultEndDate }
+}

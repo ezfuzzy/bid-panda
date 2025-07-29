@@ -5,6 +5,8 @@ import com.wasrem_WorkHive.wasrem.bidding.dto.BiddingResultDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * 입찰 공고에 대한 비즈니스 로직을 정의하는 서비스 인터페이스입니다.
  */
@@ -17,6 +19,15 @@ public interface BiddingNoticeService {
      * @return 생성된 입찰 공고 정보
      */
     BiddingNoticeDto createBiddingNotice(BiddingNoticeDto biddingNoticeDto);
+
+    /**
+     * 여러 개의 입찰 공고를 한 번에 생성합니다.
+     *
+     * @param biddingNoticeDtos 생성할 입찰 공고들의 데이터 전송 객체 (DTO) 리스트
+     * @return 생성된 입찰 공고들의 DTO 리스트
+     * @throws IllegalStateException 중복된 입찰 공고 번호와 차수가 존재하는 경우
+     */
+    List<BiddingNoticeDto> createBiddingNotices(List<BiddingNoticeDto> biddingNoticeDtos);
 
     /**
      * ID로 특정 입찰 공고를 조회합니다.
@@ -58,4 +69,6 @@ public interface BiddingNoticeService {
      * @return 수정된 입찰 공고 정보
      */
     BiddingNoticeDto addBiddingResult(Long noticeId, BiddingResultDto resultDto);
+
+    void deleteAllBiddingNotices();
 }

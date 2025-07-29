@@ -90,4 +90,6 @@ public interface BiddingNoticeRepository extends JpaRepository<BiddingNotice, Lo
     """)
     Optional<BiddingNotice> findByIdForResultView(@Param("id") Long id);
 
+
+    void deleteAll();
 }

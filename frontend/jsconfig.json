@@ -2,7 +2,12 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "constants/*": ["src/constants/*"]
+      "constants/*": ["src/constants/*"],
+      "components/*": ["src/components/*"],
+      "hooks/*": ["src/hooks/*"],
+      "pages/*": ["src/pages/*"],
+      "router/*": ["src/router/*"],
+      "utils/*": ["src/utils/*"]
     }
   },
   "include": ["src"]
