@@ -75,31 +75,31 @@ export class BidApiService {
 
   // 데이터베이스 관련 API
   static async saveToDatabase(dataToSave) {
-    return await axios.post("/api/bidding-notices/batch", dataToSave)
+    return await axios.post(`${API.BASE_URL_BACKEND_API}/batch`, dataToSave)
   }
 
   static async fetchFromDatabase(page, size = PAGINATION.ROWS_PER_PAGE) {
-    return await axios.get(`/api/bidding-notices?page=${page + 1}&size=${size}&sort=id,asc`)
+    return await axios.get(`${API.BASE_URL_BACKEND_API}?page=${page + 1}&size=${size}&sort=id,asc`)
   }
 
   static async testApi() {
-    return await axios.get("/api/bidding-notices/test")
+    return await axios.get(`${API.BASE_URL_BACKEND_API}/test`)
   }
 
   static async fetchById(id) {
-    return await axios.get(`/api/bidding-notices/${id}`)
+    return await axios.get(`${API.BASE_URL_BACKEND_API}/${id}`)
   }
 
   static async deleteById(id) {
-    return await axios.delete(`/api/bidding-notices/${id}`)
+    return await axios.delete(`${API.BASE_URL_BACKEND_API}/${id}`)
   }
 
   static async testBackendApi() {
-    return await axios.get("/api/bidding-notices/g2b/test")
+    return await axios.get(`${API.BASE_URL_BACKEND_API}/g2b/test`)
   }
 
   // admin
   static async deleteAll() {
-    return await axios.delete(`/api/bidding-notices/admin/delete-all`)
+    return await axios.delete(`${API.BASE_URL_BACKEND_API}/admin/delete-all`)
   }
 }

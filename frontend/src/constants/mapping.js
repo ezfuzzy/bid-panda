@@ -110,6 +110,9 @@ export const BID_SEARCH_CONSTANTS = {
     BASE_URL_BID_LIST: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch",
     BASE_URL_REGION: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoPrtcptPsblRgn",
     API_KEY: process.env.REACT_APP_BidPublicInfoService_API_KEY_DEC,
+
+    // backend api
+    BASE_URL_BACKEND_API: "http://backend:8888/api/bidding-notices",
   },
 
   // 업종코드 프리셋

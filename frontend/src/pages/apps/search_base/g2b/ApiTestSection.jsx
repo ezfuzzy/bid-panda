@@ -60,12 +60,13 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
       console.log(`ID ${inputId} 삭제 결과:`, res)
       showToast(`ID ${inputId} 데이터가 성공적으로 삭제되었습니다`, "success")
 
-      // setData((prev) => {
-      //   prev.filter((item) => item.id !== inputId)
-      // })
+      setData((prev) => {
+        prev.filter((item) => item.id !== inputId)
+      })
       setCurrentData((prev) => {
         prev.filter((item) => item.id !== inputId)
       })
+      
 
       setInputId("") // 삭제 성공 시 입력 필드 초기화
     } catch (err) {

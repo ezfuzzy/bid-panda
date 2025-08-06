@@ -1,0 +1,37 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bid_panda
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2222
+    depends_on:
+      - db
+
+  bid-analyzer:
+    build: ./bid-analyzer
+    ports:
+      - "5000:5000"
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: bid_panda
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2222
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
