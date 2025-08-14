@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.wasrem_WorkHive'
+group = 'com.ezfuzzy'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -56,5 +56,11 @@ tasks.named('test') {
 }
 
 jar {
-	archiveFileName = 'bid-panda.jar'
+	manifest {
+		attributes(
+			'Main-Class': 'com.ezfuzzy.bidpanda.BidPandaApplication'
+		)
+	}
+	archiveBaseName.set('bidpanda')
+	archiveVersion.set('1.0.0')
 }

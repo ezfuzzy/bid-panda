@@ -112,7 +112,7 @@ export const BID_SEARCH_CONSTANTS = {
     API_KEY: process.env.REACT_APP_BidPublicInfoService_API_KEY_DEC,
 
     // backend api
-    BASE_URL_BACKEND_API: "http://backend:8888/api/bidding-notices",
+    BASE_URL_BACKEND_API: "http://localhost:8888/api/bidding-notices",
   },
 
   // 업종코드 프리셋
