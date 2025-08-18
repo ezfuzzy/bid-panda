@@ -141,6 +141,7 @@ const G2bBidSearch = () => {
       }
 
       const validItems = itemsWithRegion.filter((item) => item !== null)
+
       const transformedItems = validItems.map((item, idx) => {
         const dtoItem = transformResponseToBiddingNoticeDto(item)
         return {
@@ -172,6 +173,8 @@ const G2bBidSearch = () => {
 
     try {
       console.log(`${saveType} 저장 시작:`, dataToSave.length, "개 항목")
+      console.log(dataToSave)
+
       const response = await BidApiService.saveToDatabase(dataToSave)
 
       const successCount = response.data.length

@@ -75,6 +75,7 @@ public class BiddingNoticeServiceImpl implements BiddingNoticeService {
         List<BiddingNoticeDto> validBiddingNoticeDtos = new ArrayList<>();
 
         for (BiddingNoticeDto biddingNoticeDto : biddingNoticeDtos) {
+            log.error("??? : {}", biddingNoticeDto.getIndstrytyCd() + biddingNoticeDto.getIndstrytyNm());
             // 중복 체크: 이미 존재하는 입찰 공고는 건너뛰기
             if (biddingNoticeRepository.existsByBidNtceNoAndBidNtceOrd(biddingNoticeDto.getBidNtceNo(), biddingNoticeDto.getBidNtceOrd())) {
                 log.error("Bidding notice with same number and order already exists. {}", biddingNoticeDto.getBidNtceNm());
@@ -85,6 +86,8 @@ public class BiddingNoticeServiceImpl implements BiddingNoticeService {
             biddingNoticeDto.setBiddingResult(null);  // 입찰 결과는 포함되지 않음
             validBiddingNoticeDtos.add(biddingNoticeDto);
         }
+
+
 
         // 유효한 입찰 공고만 Entity로 변환 후 저장
         List<BiddingNotice> biddingNotices = validBiddingNoticeDtos.stream()

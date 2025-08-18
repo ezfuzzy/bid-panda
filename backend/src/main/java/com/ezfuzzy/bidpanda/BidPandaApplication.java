@@ -5,10 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @PropertySource(value = "classpath:custom.properties")
 @SpringBootApplication
 //@EnableScheduling
+@EnableJpaAuditing
 public class BidPandaApplication {
 
 	public static void main(String[] args) { SpringApplication.run(BidPandaApplication.class, args); }

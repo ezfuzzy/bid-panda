@@ -30,8 +30,7 @@ public class BiddingNoticeDto {
     private String refNo;              // 참조번호
     private String untyNtceNo;         // 통합공고번호
 
-
-    private String indstrytyCd;        //  업종 코드
+    private String indstrytyCd;        // 업종 코드
     private String indstrytyNm;        // 업종명
     private String prtcptLmtRgnCd;     // 참가 가능 지역 코드
     private String prtcptPsblRgnNm;    // 참가 가능 지역명

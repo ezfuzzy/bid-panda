@@ -104,6 +104,15 @@ export const regionOptions = [
 
 export const PRESET_CODES = ["1162", "1164", "1172", "1173", "1192", "1260"]
 
+export const indstryty_cd_nm = [
+  { code: "1162", name: "건물위생관리업" },
+  { code: "1164", name: "시설경비업무" },
+  { code: "1172", name: "근로자파견사업" },
+  { code: "1173", name: "저수조청소업" },
+  { code: "1192", name: "소독업" },
+  { code: "1260", name: "건물(시설)관리용역" },
+]
+
 export const BID_SEARCH_CONSTANTS = {
   // API 관련 상수
   API: {
@@ -112,7 +121,8 @@ export const BID_SEARCH_CONSTANTS = {
     API_KEY: process.env.REACT_APP_BidPublicInfoService_API_KEY_DEC,
 
     // backend api
-    BASE_URL_BACKEND_API: "http://localhost:8888/api/bidding-notices",
+    // BASE_URL_BACKEND_API: "http://localhost:8888/api/bidding-notices",
+    BASE_URL_BACKEND_API: "/api/bidding-notices",
   },
 
   // 업종코드 프리셋

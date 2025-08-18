@@ -53,15 +53,21 @@ export const transformResponseToBiddingNoticeDto = (flatResponse) => {
     // BiddingNotice 기본 필드 매핑
     bidNtceNo: flatResponse.bidNtceNo || undefined,
     bidNtceOrd: flatResponse.bidNtceOrd || undefined,
-    reNtceYn: toBoolean(flatResponse.reNtceYn),
-    rgstTyNm: flatResponse.rgstTyNm || undefined,
-    ntceKindNm: flatResponse.ntceKindNm || undefined,
-    intrbidYn: toBoolean(flatResponse.intrbidYn),
     bidNtceNm: flatResponse.bidNtceNm || undefined,
-    refNo: flatResponse.refNo || undefined,
-    untyNtceNo: flatResponse.untyNtceNo || undefined,
+    ntceKindNm: flatResponse.ntceKindNm || undefined,
+    rgstTyNm: flatResponse.rgstTyNm || undefined,
+    
+    reNtceYn: toBoolean(flatResponse.reNtceYn),
+    intrbidYn: toBoolean(flatResponse.intrbidYn),
+
     bidMethdNm: flatResponse.bidMethdNm || undefined,
     cntrctCnclsMthdNm: flatResponse.cntrctCnclsMthdNm || undefined,
+    refNo: flatResponse.refNo || undefined,
+    untyNtceNo: flatResponse.untyNtceNo || undefined,
+    
+    indstrytyCd: flatResponse.indstrytyCd || undefined,
+    indstrytyNm: flatResponse.indstrytyNm || undefined,
+    prtcptLmtRgnCd: flatResponse.prtcptLmtRgnCd || undefined,
     prtcptPsblRgnNm: flatResponse.prtcptPsblRgnNm || undefined,
 
     agencyInfo: {
