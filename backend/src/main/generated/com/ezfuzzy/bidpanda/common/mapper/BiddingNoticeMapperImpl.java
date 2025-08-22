@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-08T09:27:52+0900",
+    date = "2025-08-22T11:08:16+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.15 (Microsoft)"
 )
 @Component
@@ -57,8 +57,9 @@ public class BiddingNoticeMapperImpl implements BiddingNoticeMapper {
         biddingNotice.untyNtceNo( dto.getUntyNtceNo() );
         biddingNotice.indstrytyCd( dto.getIndstrytyCd() );
         biddingNotice.indstrytyNm( dto.getIndstrytyNm() );
-        biddingNotice.prtcptLmtRgnCd( dto.getPrtcptLmtRgnCd() );
+        biddingNotice.prtcptPsblRgnCd( dto.getPrtcptPsblRgnCd() );
         biddingNotice.prtcptPsblRgnNm( dto.getPrtcptPsblRgnNm() );
+        biddingNotice.summary( dto.getSummary() );
         biddingNotice.createdAt( dto.getCreatedAt() );
         biddingNotice.updatedAt( dto.getUpdatedAt() );
         biddingNotice.agencyInfo( biddingAgencyInfoDtoToBiddingAgencyInfo( dto.getAgencyInfo() ) );
@@ -97,8 +98,9 @@ public class BiddingNoticeMapperImpl implements BiddingNoticeMapper {
         biddingNoticeDto.untyNtceNo( entity.getUntyNtceNo() );
         biddingNoticeDto.indstrytyCd( entity.getIndstrytyCd() );
         biddingNoticeDto.indstrytyNm( entity.getIndstrytyNm() );
-        biddingNoticeDto.prtcptLmtRgnCd( entity.getPrtcptLmtRgnCd() );
+        biddingNoticeDto.prtcptPsblRgnCd( entity.getPrtcptPsblRgnCd() );
         biddingNoticeDto.prtcptPsblRgnNm( entity.getPrtcptPsblRgnNm() );
+        biddingNoticeDto.summary( entity.getSummary() );
         biddingNoticeDto.createdAt( entity.getCreatedAt() );
         biddingNoticeDto.updatedAt( entity.getUpdatedAt() );
         biddingNoticeDto.agencyInfo( biddingAgencyInfoToBiddingAgencyInfoDto( entity.getAgencyInfo() ) );
@@ -135,8 +137,9 @@ public class BiddingNoticeMapperImpl implements BiddingNoticeMapper {
         entity.setUntyNtceNo( dto.getUntyNtceNo() );
         entity.setIndstrytyCd( dto.getIndstrytyCd() );
         entity.setIndstrytyNm( dto.getIndstrytyNm() );
-        entity.setPrtcptLmtRgnCd( dto.getPrtcptLmtRgnCd() );
+        entity.setPrtcptPsblRgnCd( dto.getPrtcptPsblRgnCd() );
         entity.setPrtcptPsblRgnNm( dto.getPrtcptPsblRgnNm() );
+        entity.setSummary( dto.getSummary() );
         entity.setCreatedAt( dto.getCreatedAt() );
         entity.setUpdatedAt( dto.getUpdatedAt() );
         if ( dto.getAgencyInfo() != null ) {

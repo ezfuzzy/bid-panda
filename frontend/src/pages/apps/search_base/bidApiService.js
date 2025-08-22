@@ -1,5 +1,5 @@
 import axios from "axios"
-import { BID_SEARCH_CONSTANTS, formatDate } from "../../../constants/mapping"
+import { BID_SEARCH_CONSTANTS, formatDate } from "constants/mapping"
 
 const { API, API_RESPONSE, PAGINATION } = BID_SEARCH_CONSTANTS
 
@@ -17,17 +17,18 @@ export class BidApiService {
       bidNtceNm,
       ServiceKey: API.API_KEY,
       indstrytyCd,
-      prtcptLmtRgnCd: regionCode,
+      prtcptPsblRgnCd: regionCode,
       type: API_RESPONSE.RESPONSE_TYPE,
     }
 
     const response = await axios.get(API.BASE_URL_BID_LIST, { params: queryParams })
+
     return response.data.response.body.totalCount
   }
 
   // 입찰 공고 목록 조회
   static async fetchBidList(searchParams, count) {
-    const { startDate, endDate, bidNtceNm, indstrytyCd } = searchParams
+    const { startDate, endDate, bidNtceNm, indstrytyCd, regionCode } = searchParams
 
     const queryParams = {
       inqryDiv: API_RESPONSE.INQUIRY_DIVISION,
@@ -38,11 +39,12 @@ export class BidApiService {
       bidNtceNm,
       ServiceKey: API.API_KEY,
       indstrytyCd,
-      prtcptLmtRgnCd: API_RESPONSE.REGION_ALL_CODE,
+      prtcptPsblRgnCd: regionCode,
       type: API_RESPONSE.RESPONSE_TYPE,
     }
 
     const response = await axios.get(API.BASE_URL_BID_LIST, { params: queryParams })
+
     return response.data.response.body.items || []
   }
 
@@ -60,6 +62,7 @@ export class BidApiService {
 
     try {
       const response = await axios.get(API.BASE_URL_REGION, { params: queryParams })
+
       const { resultCode } = response.data.response.header
       const apiItems = response.data.response.body.items
 

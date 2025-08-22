@@ -81,11 +81,12 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                   {isSaving ? "저장중..." : "DB저장"}
                 </button>
               </div>
+
               <p>
                 <span className="font-semibold text-gray-700">기관:</span> {item.agencyInfo?.ntceInsttNm}
               </p>
               <p>
-                <span className="font-semibold text-gray-700">참가 가능 지역:</span> {item.prtcptPsblRgnNm}
+                <span className="font-semibold text-gray-700">참가 가능 지역:</span> {item.prtcptPsblRgnNm}({item.prtcptPsblRgnCd})
               </p>
               <p>
                 <span className="font-semibold text-gray-700">공고번호:</span> {item.bidNtceNo}

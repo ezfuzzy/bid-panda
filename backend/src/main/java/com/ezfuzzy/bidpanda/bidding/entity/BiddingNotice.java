@@ -39,7 +39,7 @@ public class BiddingNotice {
 
     private String indstrytyCd;        // 업종 코드
     private String indstrytyNm;        // 업종명
-    private String prtcptLmtRgnCd;     // 참가 가능 지역 코드
+    private String prtcptPsblRgnCd;     // 참가 가능 지역 코드
     private String prtcptPsblRgnNm;    // 참가 가능 지역명
 
     @Column(columnDefinition = "TEXT")

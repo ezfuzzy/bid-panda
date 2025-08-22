@@ -1,9 +1,15 @@
-import { BID_SEARCH_CONSTANTS, regionOptions } from "constants/mapping"
+import { BID_SEARCH_CONSTANTS, regionOptions, industryOptions } from "constants/mapping"
 
 // 지역코드로 지역명 찾기
 export const getRegionNameByCode = (code) => {
   const matchedRegion = regionOptions.find((region) => region.code === code)
   return matchedRegion ? matchedRegion.name : null
+}
+
+// 업종코드로 업종명 찾기기
+export const getIndustryNameByCode = (code) => {
+  const matchedIndustry = industryOptions.find((industry) => industry.code === code)
+  return matchedIndustry ? matchedIndustry.name : null
 }
 
 // 데이터를 텍스트 형식으로 포맷팅
@@ -58,8 +64,31 @@ export const filterUrgentBids = (data) => {
 }
 
 // 공고 종류 및 키워드 필터링
+// TODO: -> 만약 같은 이름이나 같은 공고번호인 경우 재등록 차수가 높은거만 유효. 나머진 필터링
+
 export const filterBidItems = (items, excludeKeyword) => {
-  return items.filter((item) => !BID_SEARCH_CONSTANTS.EXCLUDE_NOTICE_TYPES.includes(item.ntceKindNm) && (!excludeKeyword || !item.bidNtceNm?.includes(excludeKeyword)))
+  // 취소/연기 공고 필터링 + 키워드 필터링링
+  const filteredItems = items.filter(
+    (item) => !BID_SEARCH_CONSTANTS.EXCLUDE_NOTICE_TYPES.includes(item.ntceKindNm) && (!excludeKeyword || !item.bidNtceNm?.includes(excludeKeyword))
+  )
+
+  // bidNtceNo별로 그룹화하여 bidNtceOrd가 가장 큰 항목만 남기기
+  const uniqueItems = filteredItems.reduce((acc, item) => {
+    const existingItem = acc.find((accItem) => accItem.bidNtceNo === item.bidNtceNo)
+
+    if (!existingItem) {
+      // 해당 bidNtceNo가 처음 나온 경우
+      acc.push(item)
+    } else if (item.bidNtceOrd > existingItem.bidNtceOrd) {
+      // 더 큰 bidNtceOrd를 가진 항목으로 교체
+      const index = acc.indexOf(existingItem)
+      acc[index] = item
+    }
+
+    return acc
+  }, [])
+
+  return uniqueItems
 }
 
 // 페이지네이션 계산

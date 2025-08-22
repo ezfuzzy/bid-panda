@@ -46,7 +46,7 @@ const NuriBidSearch = () => {
   const [showUrgentOnly, setShowUrgentOnly] = useState(false)
 
   const checkDataCount = async (code = null) => {
-    const finalCode = code || indstrytyCd
+    const industryTypeCode = code || indstrytyCd
     if (!startDate || !endDate) {
       alert("조회 시작일과 종료일을 선택해주세요.")
       return null
@@ -64,7 +64,7 @@ const NuriBidSearch = () => {
       inqryEndDt: formatDate(endDate, true),
       bidNtceNm,
       ServiceKey: api_key,
-      indstrytyCd: finalCode,
+      indstrytyCd: industryTypeCode,
       prtcptLmtRgnCd: regionCode,
       type: "json",
     }
@@ -89,7 +89,7 @@ const NuriBidSearch = () => {
   }
 
   const fetchData = async (code = null, page = 1) => {
-    const finalCode = code || indstrytyCd
+    const industryTypeCode = code || indstrytyCd
 
     // filtering 작업 base
     const count = await checkDataCount(code)
@@ -115,7 +115,7 @@ const NuriBidSearch = () => {
       inqryEndDt: formatDate(endDate, true),
       bidNtceNm,
       ServiceKey: api_key,
-      indstrytyCd: finalCode,
+      indstrytyCd: industryTypeCode,
       prtcptLmtRgnCd: regionCode,
       type: "json",
     }
@@ -150,7 +150,6 @@ const NuriBidSearch = () => {
       setCurrentData(items.slice(startIdx, endIdx))
       setTotalCount(items.length)
 
-      console.log(items)
     } catch (err) {
       setError(err.message)
     } finally {

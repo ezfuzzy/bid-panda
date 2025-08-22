@@ -9,7 +9,16 @@ import ApiTestSection from "pages/apps/search_base/g2b/ApiTestSection"
 import { useToast } from "hooks/useToast"
 import { BidApiService } from "../bidApiService"
 import { BID_SEARCH_CONSTANTS, createDefaultDates } from "constants/mapping"
-import { getRegionNameByCode, downloadFile, copyToClipboard, filterUrgentBids, filterBidItems, calculatePagination, calculatePreviousPeriod } from "utils/bidUtils"
+import {
+  getRegionNameByCode,
+  getIndustryNameByCode,
+  downloadFile,
+  copyToClipboard,
+  filterUrgentBids,
+  filterBidItems,
+  calculatePagination,
+  calculatePreviousPeriod,
+} from "utils/bidUtils"
 import { regionOptions } from "constants/mapping"
 import { transformResponseToBiddingNoticeDto } from "utils/transformResponseToBiddingNoticeDto"
 
@@ -44,9 +53,52 @@ const G2bBidSearch = () => {
   const [sysMessage, setSysMessage] = useState("")
   const [showUrgentOnly, setShowUrgentOnly] = useState(false)
 
+  // 날짜 범위 검증 함수
+  const validateDateRange = (start, end) => {
+    if (!start || !end) return { isValid: true, adjustedEnd: end }
+
+    const diffTime = end.getTime() - start.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays > 30 || diffDays < 0) {
+      const newEndDate = new Date(start)
+      newEndDate.setDate(start.getDate() + 30)
+      newEndDate.setHours(23, 59, 0, 0)
+      return { isValid: false, adjustedEnd: newEndDate }
+    }
+
+    return { isValid: true, adjustedEnd: end }
+  }
+
+  // DatePicker onChange 핸들러들
+  const handleStartDateChange = (date) => {
+    const adjusted = new Date(date)
+    adjusted.setHours(0, 0, 0, 0)
+    setStartDate(adjusted)
+
+    const { isValid, adjustedEnd } = validateDateRange(adjusted, endDate)
+    if (!isValid) {
+      setEndDate(adjustedEnd)
+      alert("검색 기간은 최대 30일까지 가능합니다. 종료일을 자동으로 조정했습니다.")
+    }
+  }
+
+  const handleEndDateChange = (date) => {
+    const adjusted = new Date(date)
+    adjusted.setHours(23, 59, 0, 0)
+
+    const { isValid, adjustedEnd } = validateDateRange(startDate, adjusted)
+    if (!isValid) {
+      setEndDate(adjustedEnd)
+      alert("검색 기간은 최대 30일까지 가능합니다. 종료일을 자동으로 조정했습니다.")
+    } else {
+      setEndDate(adjusted)
+    }
+  }
+
   // 데이터 개수 확인
   const checkDataCount = async (code = null) => {
-    const finalCode = code || indstrytyCd
+    const industryTypeCode = code || indstrytyCd
     if (!startDate || !endDate) {
       alert(MESSAGES.DATE_SELECTION_ERROR)
       return null
@@ -61,7 +113,7 @@ const G2bBidSearch = () => {
         startDate,
         endDate,
         bidNtceNm,
-        indstrytyCd: finalCode,
+        indstrytyCd: industryTypeCode,
         regionCode,
       }
 
@@ -87,9 +139,12 @@ const G2bBidSearch = () => {
       filtered.map(async (item, idx) => {
         try {
           const prtcptPsblRgnNm = await BidApiService.fetchRegionInfo(item.bidNtceNo, item.bidNtceOrd)
+          const prtcptPsblRgnCd = regionOptions.find((option) => prtcptPsblRgnNm.includes(option.name))?.code
+
           return {
             ...item,
             listOrder: (page - 1) * PAGINATION.ROWS_PER_PAGE + idx + 1,
+            prtcptPsblRgnCd,
             prtcptPsblRgnNm,
           }
         } catch (error) {
@@ -106,7 +161,7 @@ const G2bBidSearch = () => {
 
   // 메인 데이터 조회
   const fetchData = async (code = null, page = 1) => {
-    const finalCode = code || indstrytyCd
+    const industryTypeCode = code || indstrytyCd
     const count = await checkDataCount(code)
 
     if (!count) return
@@ -122,14 +177,18 @@ const G2bBidSearch = () => {
         startDate,
         endDate,
         bidNtceNm,
-        indstrytyCd: finalCode,
+        indstrytyCd: industryTypeCode,
         regionCode,
       }
 
       const rawItems = await BidApiService.fetchBidList(searchParams, count)
+
+      // 키워드필터링, 연기/취소 공고 필터링
       const filtered = filterBidItems(rawItems, excludeKeyword)
 
-      let itemsWithRegion
+      let itemsWithRegion, itemsWithIndustryInfo
+      // regionCode가 포함된 검색을 하면 reginName에 해당 코드를 매핑해서 가져옴
+      //
       if (regionCode) {
         itemsWithRegion = filtered.map((item, idx) => ({
           ...item,
@@ -140,7 +199,16 @@ const G2bBidSearch = () => {
         itemsWithRegion = await fetchRegionInfo(filtered, page)
       }
 
-      const validItems = itemsWithRegion.filter((item) => item !== null)
+      if (industryTypeCode) {
+        // 있을때만 삽입 - TODO: 추후 해결 ? (확장성)
+        itemsWithIndustryInfo = itemsWithRegion.map((item, idx) => ({
+          ...item,
+          indstrytyCd: industryTypeCode,
+          indstrytyNm: getIndustryNameByCode(industryTypeCode) || "",
+        }))
+      }
+
+      const validItems = itemsWithIndustryInfo.filter((item) => item !== null)
 
       const transformedItems = validItems.map((item, idx) => {
         const dtoItem = transformResponseToBiddingNoticeDto(item)
@@ -155,8 +223,6 @@ const G2bBidSearch = () => {
       setData(transformedItems)
       setCurrentData(transformedItems.slice(startIdx, endIdx))
       setTotalCount(transformedItems.length)
-
-      console.log(transformedItems)
     } catch (err) {
       setError(err.message)
       console.error(err)
@@ -173,7 +239,6 @@ const G2bBidSearch = () => {
 
     try {
       console.log(`${saveType} 저장 시작:`, dataToSave.length, "개 항목")
-      console.log(dataToSave)
 
       const response = await BidApiService.saveToDatabase(dataToSave)
 
@@ -334,22 +399,14 @@ const G2bBidSearch = () => {
                 <div className="flex items-center gap-2">
                   <DatePicker
                     selected={startDate}
-                    onChange={(date) => {
-                      const adjusted = new Date(date)
-                      adjusted.setHours(0, 0, 0, 0)
-                      setStartDate(adjusted)
-                    }}
+                    onChange={handleStartDateChange}
                     dateFormat="yyyy-MM-dd"
                     className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <span className="text-gray-500">~</span>
                   <DatePicker
                     selected={endDate}
-                    onChange={(date) => {
-                      const adjusted = new Date(date)
-                      adjusted.setHours(23, 59, 0, 0)
-                      setEndDate(adjusted)
-                    }}
+                    onChange={handleEndDateChange}
                     dateFormat="yyyy-MM-dd"
                     className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />

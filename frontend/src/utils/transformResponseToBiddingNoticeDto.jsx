@@ -56,7 +56,7 @@ export const transformResponseToBiddingNoticeDto = (flatResponse) => {
     bidNtceNm: flatResponse.bidNtceNm || undefined,
     ntceKindNm: flatResponse.ntceKindNm || undefined,
     rgstTyNm: flatResponse.rgstTyNm || undefined,
-    
+
     reNtceYn: toBoolean(flatResponse.reNtceYn),
     intrbidYn: toBoolean(flatResponse.intrbidYn),
 
@@ -64,10 +64,10 @@ export const transformResponseToBiddingNoticeDto = (flatResponse) => {
     cntrctCnclsMthdNm: flatResponse.cntrctCnclsMthdNm || undefined,
     refNo: flatResponse.refNo || undefined,
     untyNtceNo: flatResponse.untyNtceNo || undefined,
-    
+
     indstrytyCd: flatResponse.indstrytyCd || undefined,
     indstrytyNm: flatResponse.indstrytyNm || undefined,
-    prtcptLmtRgnCd: flatResponse.prtcptLmtRgnCd || undefined,
+    prtcptPsblRgnCd: flatResponse.prtcptPsblRgnCd || undefined,
     prtcptPsblRgnNm: flatResponse.prtcptPsblRgnNm || undefined,
 
     agencyInfo: {

@@ -79,7 +79,8 @@ export const myContactList = [
 ]
 
 export const regionOptions = [
-  { code: "00", name: "전국(공고서참조)" },
+  { code: "", name: "공고서참조" },
+  { code: "00", name: "전국" },
   { code: "11", name: "서울특별시" },
   { code: "26", name: "부산광역시" },
   { code: "27", name: "대구광역시" },
@@ -104,7 +105,7 @@ export const regionOptions = [
 
 export const PRESET_CODES = ["1162", "1164", "1172", "1173", "1192", "1260"]
 
-export const indstryty_cd_nm = [
+export const industryOptions = [
   { code: "1162", name: "건물위생관리업" },
   { code: "1164", name: "시설경비업무" },
   { code: "1172", name: "근로자파견사업" },
@@ -168,7 +169,7 @@ export const BID_SEARCH_CONSTANTS = {
 
   // 지역 관련
   REGION: {
-    DEFAULT_NAME: "전국(공고서참조)",
+    DEFAULT_NAME: "공고서참조",
     API_ERROR_NAME: "API 요청 실패",
     NO_INFO_NAME: "지역정보없음",
   },
