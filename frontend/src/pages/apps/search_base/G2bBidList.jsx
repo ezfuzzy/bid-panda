@@ -2,6 +2,9 @@
 import React, { useState } from "react"
 import Modal from "react-modal"
 import axios from "axios"
+import { BID_SEARCH_CONSTANTS } from "constants/mapping"
+
+const { API, API_RESPONSE, PAGINATION } = BID_SEARCH_CONSTANTS
 
 Modal.setAppElement("#root")
 
@@ -9,7 +12,12 @@ const formatDate = (datetime) => datetime?.split("T")[0]
 
 const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) => {
   const [selected, setSelected] = useState(null)
-  const [savingItems, setSavingItems] = useState(new Set()) // 저장 중인 아이템들 추적
+  const [savingItems, setSavingItems] = useState(new Set())
+  const [resultItems, setResultItems] = useState(new Set())
+  const [bidResultModal, setBidResultModal] = useState(null) // 개찰결과 모달 상태
+  const [bidResultData, setBidResultData] = useState(null) // 개찰결과 데이터
+  const [savingResult, setSavingResult] = useState(false) // 개찰결과 저장 중 상태
+
   const pagesPerGroup = 10
 
   const totalPageGroups = Math.ceil(totalPages / pagesPerGroup)
@@ -34,11 +42,18 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
     }
   }
 
+  // 개찰일시가 지났는지 확인하는 함수
+  const isOpengDatePassed = (opengDt) => {
+    if (!opengDt) return false
+    const opengDate = new Date(opengDt)
+    const now = new Date()
+    return opengDate < now
+  }
+
   // 개별 아이템 저장 함수
   const saveItem = async (item) => {
     const itemKey = `${item.bidNtceNo}-${item.listOrder}`
 
-    // 이미 저장 중인 경우 중복 요청 방지
     if (savingItems.has(itemKey)) return
 
     setSavingItems((prev) => new Set([...prev, itemKey]))
@@ -59,12 +74,132 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
     }
   }
 
+  // 개찰결과 조회 함수 (모달용)
+  const getBidResult = async (item) => {
+    const itemKey = `${item.bidNtceNo}-${item.listOrder}`
+
+    if (resultItems.has(itemKey)) return
+
+    setResultItems((prev) => new Set([...prev, itemKey]))
+    setBidResultModal(item)
+
+    const queryParams = {
+      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_NOTICE_NO,
+      pageNo: API_RESPONSE.PAGE_NUMBER,
+      numOfRows: PAGINATION.ROWS_PER_PAGE,
+      bidNtceNo: item.bidNtceNo,
+      ServiceKey: API.API_KEY,
+      type: API_RESPONSE.RESPONSE_TYPE,
+    }
+
+    try {
+      const response = await axios.get(API.BASE_URL_BID_RESULT, { params: queryParams })
+      console.log(response)
+
+      const response_item = response.data.response.body.items[0]
+      const winningInfo = response_item.opengCorpInfo.split("^")
+
+      const bid_result_item = {
+        bidNtceNo: response_item.bidNtceNo,
+        bidNtceOrd: response_item.bidNtceOrd,
+        bidClsfcNo: response_item.bidClsfcNo,
+        rbidNo: response_item.rbidNo,
+
+        bidNtceNm: response_item.bidNtceNm,
+        opengDt: response_item.opengDt,
+        prtcptCnum: response_item.prtcptCnum,
+
+        bidwinnrNm: winningInfo[0] || "-",
+        bidwinnrBizno: winningInfo[1] || "-",
+        bidwinnrCeoNm: winningInfo[2] || "-",
+        sucsfbidAmt: winningInfo[3] || "-",
+        sucsfbidRate: winningInfo[4] || "-",
+
+        progrsDivCdNm: response_item.progrsDivCdNm,
+        inptDt: response_item.inptDt,
+        rsrvtnPrceFileExistnceYn: response_item.rsrvtnPrceFileExistnceYn,
+
+        ntceInsttCd: response_item.ntceInsttCd,
+        ntceInsttNm: response_item.ntceInsttNm,
+        dminsttCd: response_item.dminsttCd,
+        dminsttNm: response_item.dminsttNm,
+
+        opengRsltNtcCntnts: response_item.opengRsltNtcCntnts,
+      }
+
+      setBidResultData(bid_result_item)
+    } catch (error) {
+      console.error("개찰결과 불러오기 실패:", error)
+      showToast("개찰결과를 불러오는 중 오류가 발생했습니다.", "error")
+      setBidResultModal(null)
+    } finally {
+      setResultItems((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(itemKey)
+        return newSet
+      })
+    }
+  }
+
+  // 개찰결과 저장 함수 (DB에서 불러온 데이터용)
+  const saveBidResultWithId = async (item, bidResultData) => {
+    try {
+      const response = await axios.post(`${API.BASE_URL_BACKEND_API}/${item.id}/result`, bidResultData)
+      console.log("개찰결과 저장 성공:", response)
+      showToast("개찰결과가 성공적으로 저장되었습니다.")
+    } catch (error) {
+      console.error("개찰결과 저장 실패:", error)
+      showToast("개찰결과를 저장하는 중 오류가 발생했습니다.", "error")
+      throw error
+    }
+  }
+
+  // 개찰결과 저장 함수 (외부 API에서 불러온 데이터용)
+  const saveBidResultWithBidNo = async (bidResultData) => {
+    try {
+      const response = await axios.post(`${API.BASE_URL_BACKEND_API}/by-bid-no/result`, bidResultData)
+      console.log("개찰결과 저장 성공:", response)
+      showToast("개찰결과가 성공적으로 저장되었습니다.")
+    } catch (error) {
+      console.error("개찰결과 저장 실패:", error)
+      showToast("개찰결과를 저장하는 중 오류가 발생했습니다.", "error")
+      throw error
+    }
+  }
+
+  // 개찰결과 저장 핸들러
+  const handleSaveBidResult = async () => {
+    if (!bidResultModal || !bidResultData) return
+
+    setSavingResult(true)
+
+    try {
+      // DB에서 불러온 데이터인지 외부 API에서 불러온 데이터인지 구분
+      if (bidResultModal.id) {
+        // DB에서 불러온 데이터 (id 존재)
+        await saveBidResultWithId(bidResultModal, bidResultData)
+      } else {
+        // 외부 API에서 불러온 데이터 (id 없음)
+        await saveBidResultWithBidNo(bidResultData)
+      }
+
+      setBidResultModal(null)
+      setBidResultData(null)
+    } catch (error) {
+      // 에러는 각 저장 함수에서 이미 처리됨
+    } finally {
+      setSavingResult(false)
+    }
+  }
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {items.map((item) => {
           const itemKey = `${item.bidNtceNo}-${item.listOrder}`
           const isSaving = savingItems.has(itemKey)
+          const isLoadingResult = resultItems.has(itemKey)
+          const showBidResultBtn = isOpengDatePassed(item.schedule?.opengDt)
 
           return (
             <div key={itemKey} className="border rounded-lg p-4 shadow hover:bg-gray-50 transition">
@@ -72,14 +207,27 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                 <h2 className="text-blue-600 font-bold text-lg cursor-pointer hover:underline flex-1" onClick={() => setSelected(item)}>
                   #{item.listOrder || item.id}. {item.bidNtceNm}
                 </h2>
-                <button
-                  onClick={() => saveItem(item)}
-                  disabled={isSaving}
-                  className={`ml-2 px-3 py-1 text-sm rounded transition-colors ${
-                    isSaving ? "bg-gray-400 text-white cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700"
-                  }`}>
-                  {isSaving ? "저장중..." : "DB저장"}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => saveItem(item)}
+                    disabled={isSaving}
+                    className={`px-3 py-1 text-sm rounded transition-colors ${
+                      isSaving ? "bg-gray-400 text-white cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700"
+                    }`}>
+                    {isSaving ? "저장중..." : "DB저장"}
+                  </button>
+
+                  {showBidResultBtn && (
+                    <button
+                      onClick={() => getBidResult(item)}
+                      disabled={isLoadingResult}
+                      className={`px-3 py-1 text-sm rounded transition-colors ${
+                        isLoadingResult ? "bg-gray-400 text-white cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-700"
+                      }`}>
+                      {isLoadingResult ? "로딩중..." : "개찰결과"}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <p>
@@ -99,6 +247,7 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
               </p>
               <p>
                 <span className="text-purple-700">개찰:</span> {formatDate(item.schedule?.opengDt)}
+                {showBidResultBtn && <span className="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded">개찰완료</span>}
               </p>
               <p>
                 <span className="text-red-500">기초금액:</span> {item.budgetInfo?.asignBdgtAmt ? parseInt(item.budgetInfo.asignBdgtAmt).toLocaleString() : "-"}원
@@ -187,6 +336,120 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
               닫기
             </button>
           </div>
+        </Modal>
+      )}
+
+      {/* 개찰결과 모달 */}
+      {bidResultModal && (
+        <Modal
+          isOpen={true}
+          onRequestClose={() => {
+            setBidResultModal(null)
+            setBidResultData(null)
+          }}
+          className="bg-white p-6 rounded shadow-xl max-w-2xl mx-auto mt-10 outline-none max-h-[80vh] overflow-y-auto"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">개찰결과</h2>
+            <button
+              onClick={() => {
+                setBidResultModal(null)
+                setBidResultData(null)
+              }}
+              className="text-gray-500 hover:text-gray-700 text-2xl">
+              ×
+            </button>
+          </div>
+
+          {!bidResultData ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3">개찰결과를 불러오는 중...</span>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-blue-700">{bidResultData.bidNtceNm}</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p>
+                    <strong>공고번호:</strong> {bidResultData.bidNtceNo}
+                  </p>
+                  <p>
+                    <strong>개찰일시:</strong> {formatDate(bidResultData.opengDt)}
+                  </p>
+                  <p>
+                    <strong>참가업체수:</strong> {bidResultData.prtcptCnum}개
+                  </p>
+                  <p>
+                    <strong>진행상태:</strong> {bidResultData.progrsDivCdNm}
+                  </p>
+                </div>
+
+                <div>
+                  <p>
+                    <strong>발주기관:</strong> {bidResultData.ntceInsttNm}
+                  </p>
+                  <p>
+                    <strong>수요기관:</strong> {bidResultData.dminsttNm}
+                  </p>
+                  <p>
+                    <strong>예가파일존재:</strong> {bidResultData.rsrvtnPrceFileExistnceYn === "Y" ? "있음" : "없음"}
+                  </p>
+                  <p>
+                    <strong>입력일시:</strong> {formatDate(bidResultData.inptDt)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <h4 className="text-md font-semibold text-green-700 mb-2">낙찰정보</h4>
+                <div className="bg-green-50 p-3 rounded">
+                  <p>
+                    <strong>낙찰업체:</strong> {bidResultData.bidwinnrNm || "정보없음"}
+                  </p>
+                  <p>
+                    <strong>사업자번호:</strong> {bidResultData.bidwinnrBizno || "정보없음"}
+                  </p>
+                  <p>
+                    <strong>대표자명:</strong> {bidResultData.bidwinnrCeoNm || "정보없음"}
+                  </p>
+                  <p>
+                    <strong>낙찰금액:</strong>{" "}
+                    {bidResultData.sucsfbidAmt && bidResultData.sucsfbidAmt !== "-" ? parseInt(bidResultData.sucsfbidAmt).toLocaleString() + "원" : "정보없음"}
+                  </p>
+                  <p>
+                    <strong>낙찰률:</strong> {bidResultData.sucsfbidRate && bidResultData.sucsfbidRate !== "-" ? bidResultData.sucsfbidRate + "%" : "정보없음"}
+                  </p>
+                </div>
+              </div>
+
+              {bidResultData.opengRsltNtcCntnts && (
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-md font-semibold mb-2">개찰결과 내용</h4>
+                  <div className="bg-gray-50 p-3 rounded max-h-32 overflow-y-auto text-sm">{bidResultData.opengRsltNtcCntnts}</div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <button
+                  onClick={() => {
+                    setBidResultModal(null)
+                    setBidResultData(null)
+                  }}
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                  disabled={savingResult}>
+                  닫기
+                </button>
+                <button
+                  onClick={handleSaveBidResult}
+                  disabled={savingResult}
+                  className={`px-4 py-2 rounded text-white ${savingResult ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}>
+                  {savingResult ? "저장중..." : "저장"}
+                </button>
+              </div>
+            </div>
+          )}
         </Modal>
       )}
     </div>

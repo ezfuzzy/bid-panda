@@ -8,7 +8,7 @@ import SaveOptionsModal from "components/SaveOptionsModal"
 import ApiTestSection from "pages/apps/search_base/g2b/ApiTestSection"
 import { useToast } from "hooks/useToast"
 import { BidApiService } from "../bidApiService"
-import { BID_SEARCH_CONSTANTS, createDefaultDates } from "constants/mapping"
+import { BID_SEARCH_CONSTANTS, createDefaultDates, regionOptions } from "constants/mapping"
 import {
   getRegionNameByCode,
   getIndustryNameByCode,
@@ -19,7 +19,6 @@ import {
   calculatePagination,
   calculatePreviousPeriod,
 } from "utils/bidUtils"
-import { regionOptions } from "constants/mapping"
 import { transformResponseToBiddingNoticeDto } from "utils/transformResponseToBiddingNoticeDto"
 
 // eslint-disable-next-line

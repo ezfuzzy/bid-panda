@@ -221,6 +221,40 @@ public class BiddingNoticeServiceImpl implements BiddingNoticeService {
     }
 
     /**
+     * 특정 입찰 공고에 대한 결과를 등록합니다. ( no id )
+     *
+     * @param resultDto 등록할 입찰 결과 데이터
+     * @return 수정된 입찰 공고 정보
+     */
+    @Override
+    public BiddingNoticeDto addBiddingResult(BiddingResultDto resultDto) {
+
+        log.info("Adding bidding result to notice with bidNtceNo: {}", resultDto.getBidNtceNo());
+
+        // 입찰 공고 엔티티 조회
+        BiddingNotice biddingNotice = biddingNoticeRepository.findByBidNtceNo(resultDto.getBidNtceNo())
+                .orElseThrow(() -> new EntityNotFoundException("BiddingNotice not found with id: " + resultDto.getBidNtceNo()));
+
+        // 이미 입찰 결과가 등록되어 있는지 확인
+        if (biddingNotice.getBiddingResult() != null) {
+            throw new IllegalStateException("Bidding result already exists for this notice.");
+        }
+
+        // DTO를 Entity로 변환
+        BiddingResult biddingResult = biddingResultMapper.toEntity(resultDto);
+
+        // 연관관계 설정
+        biddingNotice.setBiddingResult(biddingResult);
+        biddingResult.setBiddingNotice(biddingNotice);
+
+        // 변경된 입찰 공고 저장 (Cascade 설정으로 결과도 함께 저장됨)
+        BiddingNotice updatedBiddingNotice = biddingNoticeRepository.save(biddingNotice);
+
+
+        return biddingNoticeMapper.toDto(updatedBiddingNotice);
+    }
+
+    /**
      * 자식 엔티티에 부모 엔티티(BiddingNotice)의 참조를 설정합니다.
      * 양방향 연관관계의 무결성을 유지하기 위해 필요합니다.
      *

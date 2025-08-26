@@ -70,5 +70,13 @@ public interface BiddingNoticeService {
      */
     BiddingNoticeDto addBiddingResult(Long noticeId, BiddingResultDto resultDto);
 
+    /**
+     * 특정 입찰 공고에 대한 결과를 등록합니다. ( no id )
+     *
+     * @param resultDto 등록할 입찰 결과 데이터
+     * @return 수정된 입찰 공고 정보
+     */
+    BiddingNoticeDto addBiddingResult(BiddingResultDto resultDto);
+
     void deleteAllBiddingNotices();
 }

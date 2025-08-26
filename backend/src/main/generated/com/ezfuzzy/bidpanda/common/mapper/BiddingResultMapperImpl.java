@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-22T11:08:15+0900",
+    date = "2025-08-26T16:21:10+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.15 (Microsoft)"
 )
 @Component
@@ -28,22 +28,22 @@ public class BiddingResultMapperImpl implements BiddingResultMapper {
         biddingResultDto.bidNtceOrd( entity.getBidNtceOrd() );
         biddingResultDto.bidClsfcNo( entity.getBidClsfcNo() );
         biddingResultDto.rbidNo( entity.getRbidNo() );
-        biddingResultDto.ntceDivCd( entity.getNtceDivCd() );
         biddingResultDto.bidNtceNm( entity.getBidNtceNm() );
+        biddingResultDto.opengDt( entity.getOpengDt() );
         biddingResultDto.prtcptCnum( entity.getPrtcptCnum() );
         biddingResultDto.bidwinnrNm( entity.getBidwinnrNm() );
         biddingResultDto.bidwinnrBizno( entity.getBidwinnrBizno() );
         biddingResultDto.bidwinnrCeoNm( entity.getBidwinnrCeoNm() );
-        biddingResultDto.bidwinnrAdrs( entity.getBidwinnrAdrs() );
-        biddingResultDto.bidwinnrTelNo( entity.getBidwinnrTelNo() );
         biddingResultDto.sucsfbidAmt( entity.getSucsfbidAmt() );
         biddingResultDto.sucsfbidRate( entity.getSucsfbidRate() );
-        biddingResultDto.rlOpengDt( entity.getRlOpengDt() );
+        biddingResultDto.progrsDivCdNm( entity.getProgrsDivCdNm() );
+        biddingResultDto.inptDt( entity.getInptDt() );
+        biddingResultDto.rsrvtnPrceFileExistnceYn( entity.getRsrvtnPrceFileExistnceYn() );
+        biddingResultDto.ntceInsttCd( entity.getNtceInsttCd() );
+        biddingResultDto.ntceInsttNm( entity.getNtceInsttNm() );
         biddingResultDto.dminsttCd( entity.getDminsttCd() );
         biddingResultDto.dminsttNm( entity.getDminsttNm() );
-        biddingResultDto.rgstDt( entity.getRgstDt() );
-        biddingResultDto.fnlSucsfDate( entity.getFnlSucsfDate() );
-        biddingResultDto.fnlSucsfCorpOfcl( entity.getFnlSucsfCorpOfcl() );
+        biddingResultDto.opengRsltNtcCntnts( entity.getOpengRsltNtcCntnts() );
 
         return biddingResultDto.build();
     }
@@ -62,22 +62,22 @@ public class BiddingResultMapperImpl implements BiddingResultMapper {
         biddingResult.bidNtceOrd( dto.getBidNtceOrd() );
         biddingResult.bidClsfcNo( dto.getBidClsfcNo() );
         biddingResult.rbidNo( dto.getRbidNo() );
-        biddingResult.ntceDivCd( dto.getNtceDivCd() );
         biddingResult.bidNtceNm( dto.getBidNtceNm() );
+        biddingResult.opengDt( dto.getOpengDt() );
         biddingResult.prtcptCnum( dto.getPrtcptCnum() );
         biddingResult.bidwinnrNm( dto.getBidwinnrNm() );
         biddingResult.bidwinnrBizno( dto.getBidwinnrBizno() );
         biddingResult.bidwinnrCeoNm( dto.getBidwinnrCeoNm() );
-        biddingResult.bidwinnrAdrs( dto.getBidwinnrAdrs() );
-        biddingResult.bidwinnrTelNo( dto.getBidwinnrTelNo() );
         biddingResult.sucsfbidAmt( dto.getSucsfbidAmt() );
         biddingResult.sucsfbidRate( dto.getSucsfbidRate() );
-        biddingResult.rlOpengDt( dto.getRlOpengDt() );
+        biddingResult.progrsDivCdNm( dto.getProgrsDivCdNm() );
+        biddingResult.inptDt( dto.getInptDt() );
+        biddingResult.rsrvtnPrceFileExistnceYn( dto.getRsrvtnPrceFileExistnceYn() );
+        biddingResult.ntceInsttCd( dto.getNtceInsttCd() );
+        biddingResult.ntceInsttNm( dto.getNtceInsttNm() );
         biddingResult.dminsttCd( dto.getDminsttCd() );
         biddingResult.dminsttNm( dto.getDminsttNm() );
-        biddingResult.rgstDt( dto.getRgstDt() );
-        biddingResult.fnlSucsfDate( dto.getFnlSucsfDate() );
-        biddingResult.fnlSucsfCorpOfcl( dto.getFnlSucsfCorpOfcl() );
+        biddingResult.opengRsltNtcCntnts( dto.getOpengRsltNtcCntnts() );
 
         return biddingResult.build();
     }

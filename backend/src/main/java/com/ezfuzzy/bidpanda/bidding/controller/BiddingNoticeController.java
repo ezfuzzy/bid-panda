@@ -174,6 +174,18 @@ public class BiddingNoticeController {
     }
 
     /**
+     * 특정 입찰 공고에 대한 결과를 등록합니다. with bidNtceNo
+     *
+     * @param resultDto 등록할 입찰 결과 데이터
+     * @return 수정된 입찰 공고 정보와 HTTP 상태 코드 200 (OK)
+     */
+    @PostMapping("/by-bid-no/result")
+    public ResponseEntity<BiddingNoticeDto> addBiddingResult(@RequestBody BiddingResultDto resultDto) {
+        BiddingNoticeDto updatedBiddingNotice = biddingNoticeService.addBiddingResult(resultDto);
+        return ResponseEntity.ok(updatedBiddingNotice);
+    }
+
+    /**
      *  admin
      */
     @DeleteMapping("/admin/delete-all")

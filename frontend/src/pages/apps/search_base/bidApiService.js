@@ -9,7 +9,7 @@ export class BidApiService {
     const { startDate, endDate, bidNtceNm, indstrytyCd, regionCode } = searchParams
 
     const queryParams = {
-      inqryDiv: API_RESPONSE.INQUIRY_DIVISION,
+      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_CLOSE,
       pageNo: API_RESPONSE.PAGE_NUMBER,
       numOfRows: "1",
       inqryBgnDt: formatDate(startDate),
@@ -31,7 +31,7 @@ export class BidApiService {
     const { startDate, endDate, bidNtceNm, indstrytyCd, regionCode } = searchParams
 
     const queryParams = {
-      inqryDiv: API_RESPONSE.INQUIRY_DIVISION,
+      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_CLOSE,
       pageNo: API_RESPONSE.PAGE_NUMBER,
       numOfRows: count,
       inqryBgnDt: formatDate(startDate),
@@ -51,7 +51,7 @@ export class BidApiService {
   // 참가 가능 지역 조회
   static async fetchRegionInfo(bidNtceNo, bidNtceOrd) {
     const queryParams = {
-      inqryDiv: API_RESPONSE.INQUIRY_DIVISION,
+      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_CLOSE,
       pageNo: API_RESPONSE.PAGE_NUMBER,
       numOfRows: "1",
       ServiceKey: API.API_KEY,

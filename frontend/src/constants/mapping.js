@@ -117,8 +117,15 @@ export const industryOptions = [
 export const BID_SEARCH_CONSTANTS = {
   // API 관련 상수
   API: {
+    // 조달청_나라장터 입찰공고정보서비스 : 나라장터검색조건에 의한 입찰공고용역조회
     BASE_URL_BID_LIST: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch",
+
+    // 조달청_나라장터 입찰공고정보서비스 : 입찰공고목록 정보에 대한 참가가능지역정보조회
     BASE_URL_REGION: "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoPrtcptPsblRgn",
+
+    // 조달청_나라장터 낙찰정보서비스 : 나라장터 검색조건에 의한 개찰결과 용역 목록 조회
+    BASE_URL_BID_RESULT: "https://apis.data.go.kr/1230000/as/ScsbidInfoService/getOpengResultListInfoServcPPSSrch",
+
     API_KEY: process.env.REACT_APP_BidPublicInfoService_API_KEY_DEC,
 
     // backend api
@@ -158,7 +165,11 @@ export const BID_SEARCH_CONSTANTS = {
   // API 응답 관련
   API_RESPONSE: {
     SUCCESS_CODE: "00",
-    INQUIRY_DIVISION: "2",
+
+    INQUIRY_DIVISION_OPEN: "1",
+    INQUIRY_DIVISION_CLOSE: "2",
+    INQUIRY_DIVISION_NOTICE_NO: "3",
+
     PAGE_NUMBER: "1",
     RESPONSE_TYPE: "json",
     REGION_ALL_CODE: "00",
