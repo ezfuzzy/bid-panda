@@ -52,7 +52,7 @@ export class BidApiService {
   static async fetchRegionInfo(bidNtceNo, bidNtceOrd) {
     const queryParams = {
       inqryDiv: API_RESPONSE.INQUIRY_DIVISION_CLOSE,
-      pageNo: API_RESPONSE.PAGE_NUMBER,
+      pageNo: "1",
       numOfRows: "1",
       ServiceKey: API.API_KEY,
       bidNtceNo,
@@ -74,6 +74,58 @@ export class BidApiService {
       console.error("지역 정보 API 요청 실패:", error)
       return BID_SEARCH_CONSTANTS.REGION.API_ERROR_NAME
     }
+  }
+
+  static async fetchBidResult(item) {
+    const queryParams = {
+      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_NOTICE_NO,
+      pageNo: "1",
+      numOfRows: "1",
+      bidNtceNo: item.bidNtceNo,
+      ServiceKey: API.API_KEY,
+      type: API_RESPONSE.RESPONSE_TYPE,
+    }
+
+    const response = await axios.get(API.BASE_URL_BID_RESULT, { params: queryParams })
+    console.log(response)
+
+    const response_item = response.data.response.body.items[0]
+    const winningInfo = response_item.opengCorpInfo.split("^")
+
+    const bid_result_item = {
+      bidNtceNo: response_item.bidNtceNo,
+      bidNtceOrd: response_item.bidNtceOrd,
+      bidClsfcNo: response_item.bidClsfcNo,
+      rbidNo: response_item.rbidNo,
+
+      bidNtceNm: response_item.bidNtceNm,
+      opengDt: response_item.opengDt,
+      prtcptCnum: response_item.prtcptCnum,
+
+      bidwinnrNm: winningInfo[0] || "-",
+      bidwinnrBizno: winningInfo[1] || "-",
+      bidwinnrCeoNm: winningInfo[2] || "-",
+      sucsfbidAmt: winningInfo[3] || "-",
+      sucsfbidRate: winningInfo[4] || "-",
+
+      progrsDivCdNm: response_item.progrsDivCdNm,
+      inptDt: response_item.inptDt,
+      rsrvtnPrceFileExistnceYn: response_item.rsrvtnPrceFileExistnceYn,
+
+      ntceInsttCd: response_item.ntceInsttCd,
+      ntceInsttNm: response_item.ntceInsttNm,
+      dminsttCd: response_item.dminsttCd,
+      dminsttNm: response_item.dminsttNm,
+
+      opengRsltNtcCntnts: response_item.opengRsltNtcCntnts,
+    }
+
+    return bid_result_item
+  }
+
+  // python api
+  static async processBiddingNoticeDocuments(files) {
+    return await axios.post(API.BASE_URL_PYTHON_API, files)
   }
 
   // 데이터베이스 관련 API

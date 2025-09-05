@@ -3,8 +3,9 @@ import React, { useState } from "react"
 import Modal from "react-modal"
 import axios from "axios"
 import { BID_SEARCH_CONSTANTS } from "constants/mapping"
+import { BidApiService } from "pages/apps/search_base/bidApiService"
 
-const { API, API_RESPONSE, PAGINATION } = BID_SEARCH_CONSTANTS
+const { API } = BID_SEARCH_CONSTANTS
 
 Modal.setAppElement("#root")
 
@@ -12,6 +13,7 @@ const formatDate = (datetime) => datetime?.split("T")[0]
 
 const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) => {
   const [selected, setSelected] = useState(null)
+  const [isProcessing, setIsProcessing] = useState(false)
   const [savingItems, setSavingItems] = useState(new Set())
   const [resultItems, setResultItems] = useState(new Set())
   const [bidResultModal, setBidResultModal] = useState(null) // 개찰결과 모달 상태
@@ -74,7 +76,7 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
     }
   }
 
-  // 개찰결과 조회 함수 (모달용)
+  // 개찰결과 조회
   const getBidResult = async (item) => {
     const itemKey = `${item.bidNtceNo}-${item.listOrder}`
 
@@ -83,49 +85,8 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
     setResultItems((prev) => new Set([...prev, itemKey]))
     setBidResultModal(item)
 
-    const queryParams = {
-      inqryDiv: API_RESPONSE.INQUIRY_DIVISION_NOTICE_NO,
-      pageNo: API_RESPONSE.PAGE_NUMBER,
-      numOfRows: PAGINATION.ROWS_PER_PAGE,
-      bidNtceNo: item.bidNtceNo,
-      ServiceKey: API.API_KEY,
-      type: API_RESPONSE.RESPONSE_TYPE,
-    }
-
     try {
-      const response = await axios.get(API.BASE_URL_BID_RESULT, { params: queryParams })
-      console.log(response)
-
-      const response_item = response.data.response.body.items[0]
-      const winningInfo = response_item.opengCorpInfo.split("^")
-
-      const bid_result_item = {
-        bidNtceNo: response_item.bidNtceNo,
-        bidNtceOrd: response_item.bidNtceOrd,
-        bidClsfcNo: response_item.bidClsfcNo,
-        rbidNo: response_item.rbidNo,
-
-        bidNtceNm: response_item.bidNtceNm,
-        opengDt: response_item.opengDt,
-        prtcptCnum: response_item.prtcptCnum,
-
-        bidwinnrNm: winningInfo[0] || "-",
-        bidwinnrBizno: winningInfo[1] || "-",
-        bidwinnrCeoNm: winningInfo[2] || "-",
-        sucsfbidAmt: winningInfo[3] || "-",
-        sucsfbidRate: winningInfo[4] || "-",
-
-        progrsDivCdNm: response_item.progrsDivCdNm,
-        inptDt: response_item.inptDt,
-        rsrvtnPrceFileExistnceYn: response_item.rsrvtnPrceFileExistnceYn,
-
-        ntceInsttCd: response_item.ntceInsttCd,
-        ntceInsttNm: response_item.ntceInsttNm,
-        dminsttCd: response_item.dminsttCd,
-        dminsttNm: response_item.dminsttNm,
-
-        opengRsltNtcCntnts: response_item.opengRsltNtcCntnts,
-      }
+      const bid_result_item = await BidApiService.fetchBidResult(item)
 
       setBidResultData(bid_result_item)
     } catch (error) {
@@ -192,6 +153,24 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
     }
   }
 
+  const processBiddingNoticeDocuments = async (files) => {
+    setIsProcessing(true)
+    try {
+      console.log(BidApiService)
+
+      console.log(files)
+      const urls = files.flatMap((doc) => doc.specDocUrls || [])
+      console.log(urls)
+
+      const response = await BidApiService.processBiddingNoticeDocuments(urls)
+      console.log("첨부파일 처리 성공:", response)
+    } catch (error) {
+      console.error("첨부파일 처리 실패:", error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -215,6 +194,15 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                       isSaving ? "bg-gray-400 text-white cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700"
                     }`}>
                     {isSaving ? "저장중..." : "DB저장"}
+                  </button>
+
+                  <button
+                    onClick={() => processBiddingNoticeDocuments(item.documents)}
+                    disabled={isProcessing}
+                    className={`px-3 py-1 text-sm rounded transition-colors ${
+                      isProcessing ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}>
+                    {isProcessing ? "처리중..." : "첨부파일 처리"}
                   </button>
 
                   {showBidResultBtn && (

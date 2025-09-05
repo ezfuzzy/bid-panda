@@ -131,6 +131,7 @@ export const BID_SEARCH_CONSTANTS = {
     // backend api
     // BASE_URL_BACKEND_API: "http://localhost:8888/api/bidding-notices",
     BASE_URL_BACKEND_API: "/api/bidding-notices",
+    BASE_URL_PYTHON_API: "http://localhost:8001/api/process-bidding-notice-documents",
   },
 
   // 업종코드 프리셋

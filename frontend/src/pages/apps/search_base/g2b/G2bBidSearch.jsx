@@ -2,12 +2,12 @@
 import React, { useState } from "react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import BidList from "../G2bBidList"
+import BidList from "pages/apps/search_base/G2bBidList"
 import Toast from "components/Toast"
 import SaveOptionsModal from "components/SaveOptionsModal"
 import ApiTestSection from "pages/apps/search_base/g2b/ApiTestSection"
 import { useToast } from "hooks/useToast"
-import { BidApiService } from "../bidApiService"
+import { BidApiService } from "pages/apps/search_base/bidApiService"
 import { BID_SEARCH_CONSTANTS, createDefaultDates, regionOptions } from "constants/mapping"
 import {
   getRegionNameByCode,
