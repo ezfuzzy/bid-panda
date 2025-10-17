@@ -3,6 +3,7 @@ import { BidApiService } from "../bidApiService"
 
 const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData }) => {
   const [inputId, setInputId] = useState("")
+  const [fileLink, setFileLink] = useState("")
   const [loading, setLoading] = useState({
     fetch: false,
     delete: false,
@@ -66,7 +67,6 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
       setCurrentData((prev) => {
         prev.filter((item) => item.id !== inputId)
       })
-      
 
       setInputId("") // 삭제 성공 시 입력 필드 초기화
     } catch (err) {
@@ -118,6 +118,63 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
     }
   }
 
+  const handleDownloadFileByLink = async () => {
+    try {
+      const res = await BidApiService.downloadFileByLink(fileLink)
+      console.log("파일 다운로드 결과:", res)
+      showToast("파일 다운로드 성공", "success")
+    } catch (err) {
+      console.error("파일 다운로드 실패:", err)
+      showToast("파일 다운로드 실패", "error")
+    }
+  }
+
+  const handleConvertFile = async () => {
+    try {
+      const filePath = "C:\\Users\\seh40\\Desktop\\fuzzy\\code\\bid-panda\\backend\\downloads\\files\\originalHwp.hwp"
+
+      if (!filePath || !filePath.trim()) {
+        showToast("파일 경로를 입력해주세요", "error")
+        return
+      }
+
+      // HWP 파일인지 확인
+      if (!filePath.toLowerCase().endsWith(".hwp")) {
+        showToast("HWP 파일만 변환 가능합니다", "error")
+        return
+      }
+
+      // API 호출
+      const response = await fetch("http://localhost:5000/convert", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          file_path: filePath,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "변환 실패")
+      }
+
+      // 성공 처리
+      showToast(`변환 완료: ${data.filename}`, "success")
+
+      console.log("변환 결과:", {
+        원본: data.original_path,
+        변환됨: data.converted_path,
+        파일명: data.filename,
+      })
+    } catch (err) {
+      console.error("파일 변환 실패:", err)
+      showToast("파일 변환 실패", "error")
+    }
+  }
+
   return (
     <div className="bg-gray-50 rounded-lg p-4 space-y-4">
       <h3 className="text-sm font-medium text-gray-700 mb-3">🛠️ API 테스트 도구</h3>
@@ -126,26 +183,30 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
       <div className="flex flex-wrap gap-2">
         <button
           onClick={handleApiTest}
-          className="px-4 py-2 bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all text-sm">
+          className="px-4 py-2 bg-green-100 text-green-700 font-medium rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all text-sm"
+        >
           API TEST
         </button>
 
         <button
           onClick={() => fetchDataFromDB(-1)}
-          className="px-4 py-2 bg-purple-100 text-purple-700 font-medium rounded-lg hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm">
+          className="px-4 py-2 bg-purple-100 text-purple-700 font-medium rounded-lg hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm"
+        >
           DB에서 데이터 가져오기
         </button>
 
         <button
           onClick={handleBackendApiTest}
-          className="px-4 py-2 bg-indigo-100 text-indigo-700 font-medium rounded-lg hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all text-sm">
+          className="px-4 py-2 bg-indigo-100 text-indigo-700 font-medium rounded-lg hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all text-sm"
+        >
           백엔드 API 테스트
         </button>
 
         <button
           onClick={handleDeleteAll}
           disabled={loading.delete}
-          className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+          className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
           DB 전체 삭제
         </button>
       </div>
@@ -170,15 +231,13 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
         <button
           onClick={handleFetchById}
           disabled={loading.fetch}
-          className="px-4 py-2 bg-yellow-100 text-yellow-700 font-medium rounded-lg hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+          className="px-4 py-2 bg-yellow-100 text-yellow-700 font-medium rounded-lg hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
           {loading.fetch ? (
             <span className="flex items-center">
               <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-yellow-700" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               조회중...
             </span>
@@ -190,15 +249,13 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
         <button
           onClick={handleDeleteById}
           disabled={loading.delete}
-          className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+          className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        >
           {loading.delete ? (
             <span className="flex items-center">
               <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-red-700" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               삭제중...
             </span>
@@ -208,6 +265,34 @@ const ApiTestSection = ({ fetchDataFromDB, showToast, setData, setCurrentData })
         </button>
       </div>
 
+      {/* 세 번째 줄: File download 작업 */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
+          <label htmlFor="apiTestId" className="text-sm font-medium text-gray-600 whitespace-nowrap">
+            파일 링크:
+          </label>
+          <input
+            id="fileLink"
+            type="text"
+            value={fileLink}
+            onChange={(e) => setFileLink(e.target.value)}
+            className="w-200 px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            min="1"
+          />
+        </div>
+        <button
+          onClick={handleDownloadFileByLink}
+          className="px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm"
+        >
+          파일 다운로드
+        </button>
+        <button
+          onClick={handleConvertFile}
+          className="px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm"
+        >
+          파일 변환
+        </button>
+      </div>
       <div className="text-xs text-gray-500 mt-2">💡 팁: 데이터 조회/삭제 전에 ID를 입력하세요. 삭제는 확인 후 실행됩니다.</div>
     </div>
   )

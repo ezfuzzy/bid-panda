@@ -21,7 +21,9 @@ export class BidApiService {
       type: API_RESPONSE.RESPONSE_TYPE,
     }
 
-    const response = await axios.get(API.BASE_URL_BID_LIST, { params: queryParams })
+    const response = await axios.get(API.BASE_URL_BID_LIST, {
+      params: queryParams,
+    })
 
     return response.data.response.body.totalCount
   }
@@ -43,7 +45,9 @@ export class BidApiService {
       type: API_RESPONSE.RESPONSE_TYPE,
     }
 
-    const response = await axios.get(API.BASE_URL_BID_LIST, { params: queryParams })
+    const response = await axios.get(API.BASE_URL_BID_LIST, {
+      params: queryParams,
+    })
 
     return response.data.response.body.items || []
   }
@@ -61,7 +65,9 @@ export class BidApiService {
     }
 
     try {
-      const response = await axios.get(API.BASE_URL_REGION, { params: queryParams })
+      const response = await axios.get(API.BASE_URL_REGION, {
+        params: queryParams,
+      })
 
       const { resultCode } = response.data.response.header
       const apiItems = response.data.response.body.items
@@ -86,7 +92,9 @@ export class BidApiService {
       type: API_RESPONSE.RESPONSE_TYPE,
     }
 
-    const response = await axios.get(API.BASE_URL_BID_RESULT, { params: queryParams })
+    const response = await axios.get(API.BASE_URL_BID_RESULT, {
+      params: queryParams,
+    })
     console.log(response)
 
     const response_item = response.data.response.body.items[0]
@@ -121,6 +129,14 @@ export class BidApiService {
     }
 
     return bid_result_item
+  }
+
+  // test
+  static async downloadFileByLink(fileLink) {
+    console.log(API.BASE_URL_BACKEND_API + "/g2b/test/file-download")
+    console.log(fileLink)
+
+    return await axios.post(`/api/bidding-notices/g2b/test/file-download`, { fileLink: fileLink })
   }
 
   // python api

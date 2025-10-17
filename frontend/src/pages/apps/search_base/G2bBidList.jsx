@@ -190,18 +190,16 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                   <button
                     onClick={() => saveItem(item)}
                     disabled={isSaving}
-                    className={`px-3 py-1 text-sm rounded transition-colors ${
-                      isSaving ? "bg-gray-400 text-white cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700"
-                    }`}>
+                    className={`px-3 py-1 text-sm rounded transition-colors ${isSaving ? "bg-gray-400 text-white cursor-not-allowed" : "bg-green-600 text-white hover:bg-green-700"}`}
+                  >
                     {isSaving ? "저장중..." : "DB저장"}
                   </button>
 
                   <button
                     onClick={() => processBiddingNoticeDocuments(item.documents)}
                     disabled={isProcessing}
-                    className={`px-3 py-1 text-sm rounded transition-colors ${
-                      isProcessing ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"
-                    }`}>
+                    className={`px-3 py-1 text-sm rounded transition-colors ${isProcessing ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
+                  >
                     {isProcessing ? "처리중..." : "첨부파일 처리"}
                   </button>
 
@@ -209,9 +207,8 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                     <button
                       onClick={() => getBidResult(item)}
                       disabled={isLoadingResult}
-                      className={`px-3 py-1 text-sm rounded transition-colors ${
-                        isLoadingResult ? "bg-gray-400 text-white cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-700"
-                      }`}>
+                      className={`px-3 py-1 text-sm rounded transition-colors ${isLoadingResult ? "bg-gray-400 text-white cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-700"}`}
+                    >
                       {isLoadingResult ? "로딩중..." : "개찰결과"}
                     </button>
                   )}
@@ -259,10 +256,7 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
           ◀
         </button>
         {pageNumbers.map((page) => (
-          <button
-            key={page}
-            onClick={() => goToPage(page)}
-            className={`px-3 py-1 border rounded ${page === currentPage ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}>
+          <button key={page} onClick={() => goToPage(page)} className={`px-3 py-1 border rounded ${page === currentPage ? "bg-blue-600 text-white" : "bg-gray-100 hover:bg-gray-200"}`}>
             {page}
           </button>
         ))}
@@ -277,7 +271,8 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
           isOpen={true}
           onRequestClose={() => setSelected(null)}
           className="bg-white p-6 rounded shadow-xl max-w-xl mx-auto mt-10 outline-none"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50">
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50"
+        >
           <h2 className="text-xl font-bold mb-4">{selected.bidNtceNm}</h2>
           <p>
             <strong>기관:</strong> {selected.agencyInfo?.ntceInsttNm}
@@ -336,7 +331,8 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
             setBidResultData(null)
           }}
           className="bg-white p-6 rounded shadow-xl max-w-2xl mx-auto mt-10 outline-none max-h-[80vh] overflow-y-auto"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50">
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50"
+        >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">개찰결과</h2>
             <button
@@ -344,7 +340,8 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                 setBidResultModal(null)
                 setBidResultData(null)
               }}
-              className="text-gray-500 hover:text-gray-700 text-2xl">
+              className="text-gray-500 hover:text-gray-700 text-2xl"
+            >
               ×
             </button>
           </div>
@@ -403,8 +400,7 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                     <strong>대표자명:</strong> {bidResultData.bidwinnrCeoNm || "정보없음"}
                   </p>
                   <p>
-                    <strong>낙찰금액:</strong>{" "}
-                    {bidResultData.sucsfbidAmt && bidResultData.sucsfbidAmt !== "-" ? parseInt(bidResultData.sucsfbidAmt).toLocaleString() + "원" : "정보없음"}
+                    <strong>낙찰금액:</strong> {bidResultData.sucsfbidAmt && bidResultData.sucsfbidAmt !== "-" ? parseInt(bidResultData.sucsfbidAmt).toLocaleString() + "원" : "정보없음"}
                   </p>
                   <p>
                     <strong>낙찰률:</strong> {bidResultData.sucsfbidRate && bidResultData.sucsfbidRate !== "-" ? bidResultData.sucsfbidRate + "%" : "정보없음"}
@@ -426,13 +422,15 @@ const BidList = ({ items, currentPage, totalPages, onPageChange, showToast }) =>
                     setBidResultData(null)
                   }}
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                  disabled={savingResult}>
+                  disabled={savingResult}
+                >
                   닫기
                 </button>
                 <button
                   onClick={handleSaveBidResult}
                   disabled={savingResult}
-                  className={`px-4 py-2 rounded text-white ${savingResult ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}>
+                  className={`px-4 py-2 rounded text-white ${savingResult ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                >
                   {savingResult ? "저장중..." : "저장"}
                 </button>
               </div>

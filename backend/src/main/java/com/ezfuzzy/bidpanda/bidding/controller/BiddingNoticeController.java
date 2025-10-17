@@ -14,6 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +75,38 @@ public class BiddingNoticeController {
         return ResponseEntity.ok(Map.of("msg", str));
     }
 
+    @PostMapping("/g2b/test/file-download")
+    public ResponseEntity<Map<String, String>> backendFileDownload(@RequestBody Map<String,String> body) {
+        String downloadLink = body.get("fileLink");
+        try {
+            Path targetDir = Paths.get("downloads/files");
+            if(!Files.exists(targetDir)) {
+                Files.createDirectories(targetDir);
+            }
+
+            String baseName = "originalHwp";
+            String extension = ".hwp";
+            Path targetFile = targetDir.resolve(baseName + extension);
+            int count = 1;
+
+            while (Files.exists(targetFile)) {
+                String newName = baseName + "(" + count + ")" + extension;
+                targetFile = targetDir.resolve(newName);
+                count++;
+            }
+            // URL에서 파일 다운로드
+            try (InputStream in = new URL(downloadLink).openStream()) {
+                Files.copy(in, targetFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return ResponseEntity.ok(Map.of("Saved to", targetFile.toAbsolutePath().toString()));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("다운로드 실패", e.getMessage()));
+        }
+    }
 
 
     // ==================================================================================
