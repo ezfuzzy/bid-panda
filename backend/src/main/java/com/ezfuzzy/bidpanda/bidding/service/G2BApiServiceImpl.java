@@ -35,12 +35,12 @@ public class G2BApiServiceImpl implements G2BApiService{
     @Override
     public String fetchBiddingNotices() {
         // 1. basic
-        basicApiCall();
 
-        return "str";
+        return basicApiCall();
     }
 
-    private void basicApiCall() {
+    private String basicApiCall() {
+        String response = "";
         try {
             // URL 직접 구성
             String url = "https://apis.data.go.kr/1230000/ad/BidPublicInfoService/getBidPblancListInfoServcPPSSrch" +
@@ -56,13 +56,15 @@ public class G2BApiServiceImpl implements G2BApiService{
 
             // RestTemplate으로 호출
             URI uri = new URI(url);
-            String response = restTemplate.getForObject(uri, String.class);
+            response = restTemplate.getForObject(uri, String.class);
 
             log.info("\n기본 호출 응답: {}", response);
             processBiddingNoticeData(response);
+
         } catch (Exception e) {
             log.error("기본 API 호출 오류: {}", e.getMessage(), e);
         }
+        return response;
     }
 
     private void processBiddingNoticeData(String responseData) {
